@@ -30,7 +30,7 @@ const IndexPage = ({ location }) => (
       <article className="browse-cta">
         <h2>Browse Our Art</h2>
         <p>All of our paintings are one-of-a-kind and hand painted with love.</p> 
-        <Link to="/browse">Show Me Some Bugs</Link>
+        <Link to="/products">Show Me Some Bugs</Link>
       </article>
       <article className="commision-cta">
         <h2>Commissions</h2>

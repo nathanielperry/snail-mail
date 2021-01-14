@@ -8,7 +8,9 @@ const path = require('path');
 
 exports.createPages = async ({ graphql, actions }) => {
     const { createPage } = actions;
-    const result = await graphql(`{
+
+    //Individual Product Pages
+    const productResult = await graphql(`{
         allStrapiProduct {
             nodes {
                 slug
@@ -16,19 +18,36 @@ exports.createPages = async ({ graphql, actions }) => {
         }
     }`);
 
-  if (result.errors) {
-      throw result.errors;
+  if (productResult.errors) {
+      throw productResult.errors;
   }
 
-  const bugs = result.data.allStrapiProduct.nodes;
+  const products = productResult.data.allStrapiProduct.nodes;
   const ProductTemplate = require.resolve("./src/templates/product.js");
 
-  bugs.forEach((product) => {
+  products.forEach((product) => {
     createPage({
         path: `/product/${product.slug}`,
         component: ProductTemplate,
         context: {
             slug: product.slug,
+        },
+    });
+  });
+
+  //Product List Pages
+  const productsPerPage = 9;
+  const numPages = Math.ceil(products.length / productsPerPage);
+
+  Array.from({ length: numPages }).forEach((_, i) => {
+    createPage({
+        path: i === 0 ? `/products/` : `/products/${i + 1}`,
+        component: path.resolve("./src/templates/product-list.js"),
+        context: {
+            limit: productsPerPage,
+            skip: i * productsPerPage,
+            numPages,
+            currentPage: i + 1,
         },
     });
   });
@@ -59,3 +78,5 @@ module.exports.onCreateNode = async ({ node, actions, createNodeId }) => {
         });
     }
 };
+
+//Product List Pages
