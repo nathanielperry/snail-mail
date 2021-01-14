@@ -23,18 +23,29 @@ const ProductList = styled.ul`
     grid-gap: 1rem;
     list-style: none;
     margin: 0;
+
+    li {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      gap: 0.5rem;
+    }
+`;
+
+const ProductImage = styled(Img)`
+  height: 10rem;
 `;
 
 export default function Browse({ data }) {
-    const bugs = data.allStrapiProduct.nodes.map(bug => {
+    const products = data.allStrapiProduct.nodes.map(product => {
         return {
-            id: bug.id,
-            price: bug.price,
-            slug: bug.slug,
-            title: bug.title,
-            url: `/product/${bug.slug}`,
-            description: bug.description,
-            img: bug.image.childImageSharp.fluid,
+            id: product.id,
+            price: product.price,
+            slug: product.slug,
+            title: product.title,
+            url: `/product/${product.slug}`,
+            description: product.description,
+            img: product.image.childImageSharp.fluid,
         }
     });
 
@@ -43,13 +54,14 @@ export default function Browse({ data }) {
             <SEO title="Snail in the Mail" />
             <Snipcart/>
             <SectionTag className="products">
-                <ProductList className="bugs">
-                    { bugs.map(bug => (
-                        <li key={bug.id}>
-                            <Link to={bug.url}><h3>{bug.title}</h3></Link>
-                            <p>{bug.description}</p>
-                            <Link to={bug.url}><Img fluid={bug.img} /></Link>
-                            <p>${Number.parseInt(bug.price).toFixed(2)}</p>
+                <ProductList className="products-list">
+                    { products.map(product => (
+                        <li key={product.id}>
+                            <Link to={product.url}><h3>{product.title}</h3></Link>
+                            <p>{product.description}</p>
+                            <Link to={product.url}><ProductImage fluid={product.img} /></Link>
+                            <p>${Number.parseInt(product.price).toFixed(2)}</p>
+                            <SnipButton product={product} />
                         </li>
                     ))}
                 </ProductList>
@@ -58,8 +70,7 @@ export default function Browse({ data }) {
     );
 };
 
-export const query = graphql`
-  {
+export const query = graphql`{
     allStrapiProduct(limit: 10) {
       nodes {
         id

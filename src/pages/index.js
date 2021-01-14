@@ -22,17 +22,19 @@ const SectionTag = styled.section`
 
 const IndexPage = ({ location }) => (
   <Layout isHomePage={location.pathname === '/'}>
-    <SEO title="Snail in the Mail" />
+    <SEO title="Snail Mail" />
     <SectionTag className="splash">
-      <h1>Snail in the Mail</h1>
+      <h1>Snail Mail</h1>
     </SectionTag>
     <SectionTag className="content">
       <article className="browse-cta">
         <h2>Browse Our Art</h2>
+        <p>All of our paintings are one-of-a-kind and hand painted with love.</p> 
         <Link to="/browse">Show Me Some Bugs</Link>
       </article>
       <article className="commision-cta">
         <h2>Commissions</h2>
+        <p>Got something specific in mind?</p>
         <Link to="/commissions">Send Us a Request</Link>
       </article>
     </SectionTag>

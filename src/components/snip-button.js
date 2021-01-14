@@ -1,14 +1,15 @@
 import React from "react";
 
-export default function SnipButton({ bug, url }) {
+export default function SnipButton({ product, url }) {
     return (
-        <button class="snipcart-add-item"
-            data-item-id={bug.id}
-            data-item-price={bug.price}
-            data-item-url={url || bug.url}
-            data-item-description={bug.description}
-            data-item-image={bug.img.src}
-            data-item-name={bug.title}
+        <button className="snipcart-add-item"
+            data-item-id={product.id}
+            data-item-price={product.price}
+            data-item-url={url || product.url}
+            data-item-description={product.description}
+            data-item-image={product.img.src}
+            data-item-name={product.title}
+            data-item-max-quantity={1}
         >
             Add to cart
         </button>
