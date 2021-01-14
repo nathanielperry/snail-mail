@@ -7,6 +7,7 @@ import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Snipcart from "../components/snipcart";
 import SnipButton from "../components/snip-button";
+import CategoryList from "../components/category-list";
 
 const SectionTag = styled.section`
   padding: 2rem;
@@ -58,28 +59,39 @@ const ProductFooter = styled.footer`
 `;
 
 export default function ProductList({ data, pageContext }) {
-    const { numPages, currentPage } = pageContext; 
+    const { numPages, currentPage, category } = pageContext; 
+    const baseUrl = category ? `/category/${category}/` : `/products/`;
     const isFirst = currentPage === 1;
     const isLast = currentPage === numPages;
-    const prevPage = currentPage - 1 === 1 ? "/products/" : (currentPage - 1).toString();
+    const prevPage = currentPage - 1 === 1 ? baseUrl : (currentPage - 1).toString();
     const nextPage = (currentPage + 1).toString();
 
     const products = data.allStrapiProduct.nodes.map(product => {
         return {
-            id: product.id,
-            price: product.price,
-            slug: product.slug,
-            title: product.title,
-            url: `/product/${product.slug}`,
+            ...product,
             description: product.description,
             img: product.image.childImageSharp.fluid,
         }
     });
 
+    const allCategories = data.allStrapiCategory.nodes;
+    const usedCategoryNames = products.reduce((acc, cur) => {
+        acc.push(...cur.categories.map(cat => cat.name));
+        return acc;
+      }, []).filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
+    ;
+    const usedCategories = allCategories.filter(cat => {
+        return usedCategoryNames.includes(cat.name);
+    });
+
     return (
         <Layout>
             <SEO title="Snail in the Mail" />
-            <Snipcart/>
+            <SectionTag className="categories">
+                <CategoryList categories={usedCategories} />
+            </SectionTag>
             <SectionTag className="products">
                 <ProductListUl className="products-list">
                     { products.map(product => (
@@ -115,11 +127,12 @@ export default function ProductList({ data, pageContext }) {
 };
 
 export const query = graphql`
-query productListQuery($skip: Int!, $limit: Int!){
+query productListQuery($skip: Int!, $limit: Int!, $filter: StrapiProductFilterInput){
     allStrapiProduct(
         sort: { fields: id, order: DESC }
         limit: $limit
         skip: $skip
+        filter: $filter
     ) {
         nodes {
             id
@@ -127,6 +140,10 @@ query productListQuery($skip: Int!, $limit: Int!){
             slug
             title
             description
+            categories {
+                name
+                slug
+            }
             image {
                 childImageSharp {
                     fluid(maxWidth: 300) {
@@ -134,6 +151,12 @@ query productListQuery($skip: Int!, $limit: Int!){
                     }
                 }
             }
+        }
+    }
+    allStrapiCategory {
+        nodes {
+            name
+            slug
         }
     }
 }`

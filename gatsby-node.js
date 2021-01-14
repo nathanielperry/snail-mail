@@ -9,26 +9,37 @@ const path = require('path');
 exports.createPages = async ({ graphql, actions }) => {
     const { createPage } = actions;
 
-    //Individual Product Pages
-    const productResult = await graphql(`{
+    const result = await graphql(`{
         allStrapiProduct {
             nodes {
                 slug
+                categories {
+                    slug
+                }
             }
         }
     }`);
 
-  if (productResult.errors) {
-      throw productResult.errors;
+  if (result.errors) {
+      throw result.errors;
   }
 
-  const products = productResult.data.allStrapiProduct.nodes;
-  const ProductTemplate = require.resolve("./src/templates/product.js");
+  const products = result.data.allStrapiProduct.nodes;
+  //Get all used categories
+  const allCategories = products.reduce((acc, cur) => {
+    acc.push(...cur.categories.map(cat => cat.slug));
+    return acc;
+  }, []);
+  //filter for unique categories
+  const uniqueCategories = allCategories.filter((value, index, self) => {
+    return self.indexOf(value) === index;
+  });
 
+  //Individual Product Pages
   products.forEach((product) => {
     createPage({
         path: `/product/${product.slug}`,
-        component: ProductTemplate,
+        component: require.resolve("./src/templates/product.js"),
         context: {
             slug: product.slug,
         },
@@ -48,8 +59,29 @@ exports.createPages = async ({ graphql, actions }) => {
             skip: i * productsPerPage,
             numPages,
             currentPage: i + 1,
+            filter: {},
         },
     });
+  });
+
+  //Category Pages
+  uniqueCategories.forEach((category, i) => {
+    const numProductsInCategory = products.filter(p => p.categories.map(c => c.slug).includes(category)).length;
+    const numPagesInCategory = Math.ceil(numProductsInCategory / productsPerPage);
+    Array.from({ length: numPagesInCategory }).forEach((_, i) => {
+        createPage({
+            path: i === 0 ? `/category/${category}/` : `/category/${category}/${i + 1}`,
+            component: path.resolve("./src/templates/product-list.js"),
+            context: {
+                limit: productsPerPage,
+                skip: i * productsPerPage,
+                numPages: numPagesInCategory,
+                currentPage: i + 1,
+                category,
+                filter: {categories: {elemMatch: {slug: {eq: category}}}},
+            },
+        });
+      });
   });
 }
 
