@@ -27,13 +27,34 @@ const ProductList = styled.ul`
     li {
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      justify-content: flex-end;
       gap: 0.5rem;
     }
 `;
 
+const ProductTitle = styled(Link)`
+`;
+
+const ProductDescription = styled.p`
+  margin-bottom: auto;
+`;
+
 const ProductImage = styled(Img)`
   height: 10rem;
+`;
+
+const ProductFooter = styled.footer`
+  display: flex;
+  justify-content: space-between;
+  align-content: flex-start;
+  p {
+    margin: 0;
+  }
+  button {
+    border: 0;
+    background: lightgreen;
+    border-radius: 15px;
+  }
 `;
 
 export default function Browse({ data }) {
@@ -57,11 +78,13 @@ export default function Browse({ data }) {
                 <ProductList className="products-list">
                     { products.map(product => (
                         <li key={product.id}>
-                            <Link to={product.url}><h3>{product.title}</h3></Link>
-                            <p>{product.description}</p>
+                            <ProductTitle to={product.url}><h3>{product.title}</h3></ProductTitle>
+                            <ProductDescription>{product.description}</ProductDescription>
                             <Link to={product.url}><ProductImage fluid={product.img} /></Link>
-                            <p>${Number.parseInt(product.price).toFixed(2)}</p>
-                            <SnipButton product={product} />
+                            <ProductFooter>
+                              <p>${Number.parseInt(product.price).toFixed(2)}</p>
+                              <SnipButton product={product} />
+                            </ProductFooter>
                         </li>
                     ))}
                 </ProductList>
