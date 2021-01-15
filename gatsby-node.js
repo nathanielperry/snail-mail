@@ -10,7 +10,7 @@ exports.createPages = async ({ graphql, actions }) => {
     const { createPage } = actions;
 
     const result = await graphql(`{
-        allStrapiProduct {
+        allStrapiProduct(filter: {sold: {eq: false}}) {
             nodes {
                 slug
                 categories {

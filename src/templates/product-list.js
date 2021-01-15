@@ -5,7 +5,6 @@ import { Link, graphql } from "gatsby";
 import Img from 'gatsby-image';
 import Layout from "../components/layout";
 import SEO from "../components/seo";
-import Snipcart from "../components/snipcart";
 import SnipButton from "../components/snip-button";
 import CategoryList from "../components/category-list";
 
