@@ -68,6 +68,7 @@ export default function ProductList({ data, pageContext }) {
     const products = data.allStrapiProduct.nodes.map(product => {
         return {
             ...product,
+            url: `/product/${product.slug}`,
             description: product.description,
             img: product.image.childImageSharp.fluid,
         }
