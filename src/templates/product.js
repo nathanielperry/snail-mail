@@ -22,9 +22,11 @@ const SectionTag = styled.section`
 `;
 
 export default function Product ({ data }) {
-    const product = data.strapiProduct;
-    product.url = `/product/${product.slug}`;
-    product.img = product.image.childImageSharp.fluid;
+    const product = {
+        ...data.strapiProduct,
+        url: `/product/${data.strapiProduct.slug}`,
+        img: data.strapiProduct.image.childImageSharp.fluid,
+    };
 
     return (
         <Layout>
@@ -33,7 +35,7 @@ export default function Product ({ data }) {
                 description={product.description}
             />
             <SectionTag>
-                <div className="product">
+                <div className="product snipcart-add-item">
                     <div className="info">
                         <h1>{product.title}</h1>
                         <p>{product.description}</p>
